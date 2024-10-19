@@ -29,7 +29,7 @@ import (
 // InitializeServer sets up an HTTP server with defined handlers.
 // Repositories are initialized, creates the services, and subsequently constructs
 // handlers for the services
-func InitializeServer(ctx context.Context, k config.ApxConfig, logger *zap.Logger) (*xhttp.Server, error) {
+func InitializeServer(ctx context.Context, k config.Config, logger *zap.Logger) (*xhttp.Server, error) {
 	// Mongo Connection
 	client, err := mongodb.Connect(ctx, k.Mongo.MetaURI)
 	if err != nil {
@@ -75,7 +75,7 @@ func LoadConfig() *koanf.Koanf {
 
 func main() {
 	k := LoadConfig()
-	appKonf := config.ApxConfig{}
+	appKonf := config.Config{}
 	k.Unmarshal("", &appKonf)
 
 	if !appKonf.IsProdMode {

@@ -18,7 +18,7 @@ mongo:
   meta_uri: "mongodb+srv://ajay:RjEGri696X2Rw8dK@my-cluster.0uuox.mongodb.net/?retryWrites=true&w=majority&appName=My-Cluster"
 `)
 
-type ApxConfig struct {
+type Config struct {
 	Logger     Logger `koanf:"logger"`
 	Listen     string `koanf:"listen"`
 	Prefix     string `koanf:"prefix"`
@@ -35,7 +35,7 @@ type Mongo struct {
 }
 
 // Validate validates the configuration
-func (c *ApxConfig) Validate() error {
+func (c *Config) Validate() error {
 	ve := errors.ValidationErrs()
 
 	if c.Listen == "" {
