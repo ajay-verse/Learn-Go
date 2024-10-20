@@ -5,7 +5,8 @@ import "learn-go/errors"
 type StudentModel struct {
 	RollNo string `json:"roll_no" bson:"Roll_No"`
 	Name   string `json:"name" bson:"Student_Name"`
-	Bday   string `json:"bday" bson:"Birth_Date"`
+	Gender   string `json:"gender" bson:"Gender"`
+	MailID string `json:"mail_id" bson:"Mail_Id"`
 }
 
 func (s *StudentModel) Validate() error {
@@ -16,8 +17,11 @@ func (s *StudentModel) Validate() error {
 	if s.Name == "" {
 		ve.Add("name", "cannot be empty")
 	}
-	if s.Bday == "" {
-		ve.Add("bday", "cannot be empty")
+	if s.Gender == "" {
+		ve.Add("gender", "cannot be empty")
+	}
+	if s.MailID == "" {
+		ve.Add("mail_id", "cannot be empty")
 	}
 	return ve.Err()
 }

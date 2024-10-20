@@ -19,7 +19,7 @@ type StudentsRepository struct {
 }
 
 func NewStudentsRepository(client *mongo.Client) *StudentsRepository {
-	return &StudentsRepository{client: client, collection: "Bdays"}
+	return &StudentsRepository{client: client, collection: "class"}
 }
 
 // GetAllStudents returns all students in collection
