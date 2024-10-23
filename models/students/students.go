@@ -5,7 +5,7 @@ import "learn-go/errors"
 type StudentModel struct {
 	RollNo string `json:"roll_no" bson:"Roll_No"`
 	Name   string `json:"name" bson:"Student_Name"`
-	Gender   string `json:"gender" bson:"Gender"`
+	Gender string `json:"gender" bson:"Gender"`
 	MailID string `json:"mail_id" bson:"Mail_Id"`
 }
 
