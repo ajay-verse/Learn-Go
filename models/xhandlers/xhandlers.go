@@ -3,5 +3,6 @@ package xhandlers
 import handlers "learn-go/http/handlers"
 
 type XHandlers struct {
-	StudentsHandlers *handlers.Students
+	StudentsHandlers *handlers.StudentsHandler
+	OrdersHandlers   *handlers.OrdersHandler
 }

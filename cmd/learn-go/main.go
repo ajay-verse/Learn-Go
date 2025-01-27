@@ -3,6 +3,7 @@ package main
 import (
 	// Go Internal Packages
 	"context"
+	"learn-go/services/orders"
 	"os"
 	"os/signal"
 	"syscall"
@@ -45,14 +46,18 @@ func InitializeServer(ctx context.Context, k config.Config, logger *zap.Logger) 
 
 	// Init repos, services && handlers
 	studentsRepo := mongodb.NewStudentsRepository(mongoClient)
+	ordersRepo := redis.NewOrdersRepository(redisClient, logger)
 
 	healthSvc := health.NewService(logger, mongoClient, redisClient)
 	studentsSvc := students.NewService(studentsRepo)
+	ordersSvc := orders.NewService(ordersRepo)
 
 	studentsHandler := handlers.NewSegmentsHandler(studentsSvc)
+	ordersHandler := handlers.NewOrdersHandler(ordersSvc)
 
 	xHandlers := xhmodels.XHandlers{
 		StudentsHandlers: studentsHandler,
+		OrdersHandlers:   ordersHandler,
 	}
 
 	server := xhttp.NewServer(k.Prefix, logger, &xHandlers, healthSvc)

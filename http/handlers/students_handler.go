@@ -23,15 +23,15 @@ type StudentsService interface {
 	DeleteStudent(context.Context, string) error
 }
 
-type Students struct {
+type StudentsHandler struct {
 	svc StudentsService
 }
 
-func NewSegmentsHandler(svc StudentsService) *Students {
-	return &Students{svc: svc}
+func NewSegmentsHandler(svc StudentsService) *StudentsHandler {
+	return &StudentsHandler{svc: svc}
 }
 
-func (a *Students) GetAll(w http.ResponseWriter, r *http.Request) (response any, status int, err error) {
+func (a *StudentsHandler) GetAll(w http.ResponseWriter, r *http.Request) (response any, status int, err error) {
 	students, err := a.svc.GetAllStudents(r.Context())
 	if err == nil {
 		return students, http.StatusOK, nil
@@ -39,7 +39,7 @@ func (a *Students) GetAll(w http.ResponseWriter, r *http.Request) (response any,
 	return
 }
 
-func (a *Students) GetOne(w http.ResponseWriter, r *http.Request) (response any, status int, err error) {
+func (a *StudentsHandler) GetOne(w http.ResponseWriter, r *http.Request) (response any, status int, err error) {
 	rollNo := chi.URLParam(r, "rollNo")
 	if rollNo == "" {
 		return nil, http.StatusBadRequest, errors.EmptyParamErr("rollNo")
@@ -52,7 +52,7 @@ func (a *Students) GetOne(w http.ResponseWriter, r *http.Request) (response any,
 	return
 }
 
-func (a *Students) Insert(w http.ResponseWriter, r *http.Request) (response any, status int, err error) {
+func (a *StudentsHandler) Insert(w http.ResponseWriter, r *http.Request) (response any, status int, err error) {
 	var student models.StudentModel
 	if err := json.NewDecoder(r.Body).Decode(&student); err != nil {
 		return nil, http.StatusBadRequest, errors.InvalidBodyErr(err)
@@ -68,7 +68,7 @@ func (a *Students) Insert(w http.ResponseWriter, r *http.Request) (response any,
 	return
 }
 
-func (a *Students) Update(w http.ResponseWriter, r *http.Request) (response any, status int, err error) {
+func (a *StudentsHandler) Update(w http.ResponseWriter, r *http.Request) (response any, status int, err error) {
 	rollNo := chi.URLParam(r, "rollNo")
 	if rollNo == "" {
 		return nil, http.StatusBadRequest, errors.EmptyParamErr("rollNo")
@@ -90,7 +90,7 @@ func (a *Students) Update(w http.ResponseWriter, r *http.Request) (response any,
 	return
 }
 
-func (a *Students) Delete(w http.ResponseWriter, r *http.Request) (response any, status int, err error) {
+func (a *StudentsHandler) Delete(w http.ResponseWriter, r *http.Request) (response any, status int, err error) {
 	rollNo := chi.URLParam(r, "rollNo")
 	if rollNo == "" {
 		return nil, http.StatusBadRequest, errors.EmptyParamErr("rollNo")
