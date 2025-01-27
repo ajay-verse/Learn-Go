@@ -16,7 +16,7 @@ import (
 )
 
 type OrdersService interface {
-	Insert(ctx context.Context, order omodels.Order) error
+	Insert(ctx context.Context, order omodels.Order) (omodels.Order, error)
 	Get(ctx context.Context, orderID string) (omodels.Order, error)
 	Update(ctx context.Context, order omodels.Order) error
 	Delete(ctx context.Context, orderID string) error
@@ -52,7 +52,7 @@ func (a *OrdersHandler) Insert(w http.ResponseWriter, r *http.Request) (response
 		return nil, http.StatusBadRequest, errors.ValidationFailedErr(err)
 	}
 
-	err = a.svc.Insert(r.Context(), order)
+	order, err = a.svc.Insert(r.Context(), order)
 	if err == nil {
 		return order, http.StatusCreated, nil
 	}

@@ -42,7 +42,7 @@ func (r *OrdersRepository) Insert(ctx context.Context, order omodels.Order) erro
 		return fmt.Errorf("failed to insert order: %w", err)
 	}
 
-	if err := tx.MSet(ctx, "orders", key).Err(); err != nil {
+	if err := tx.SAdd(ctx, "orders", key).Err(); err != nil {
 		tx.Discard()
 		return fmt.Errorf("failed to insert order to set: %w", err)
 	}
@@ -109,4 +109,12 @@ func (r *OrdersRepository) Update(ctx context.Context, order omodels.Order) erro
 		return fmt.Errorf("failed to update order: %w", err)
 	}
 	return nil
+}
+
+func (r *OrdersRepository) Exists(ctx context.Context, orderID string) (bool, error) {
+	res, err := r.client.Exists(ctx, orderIDKey(orderID)).Result()
+	if err != nil {
+		return false, fmt.Errorf("failed to check order: %w", err)
+	}
+	return res == 1, nil
 }

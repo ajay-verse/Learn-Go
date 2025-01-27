@@ -5,6 +5,7 @@ go 1.22.5
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/go-chi/chi/v5 v5.1.0
+	github.com/google/uuid v1.1.2
 	github.com/jsternberg/zap-logfmt v1.3.0
 	github.com/knadh/koanf v1.5.0
 	github.com/redis/go-redis/v9 v9.7.0

@@ -3,11 +3,12 @@ package orders
 import (
 	// Go Internal Packages
 	"context"
-	"learn-go/utils/helpers"
-	"time"
+	"fmt"
 
 	// Local Packages
+	errors "learn-go/errors"
 	omodels "learn-go/models/orders"
+	helpers "learn-go/utils/helpers"
 )
 
 type OrdersRepository interface {
@@ -15,6 +16,7 @@ type OrdersRepository interface {
 	Get(ctx context.Context, orderID string) (omodels.Order, error)
 	Update(ctx context.Context, order omodels.Order) error
 	Delete(ctx context.Context, orderID string) error
+	Exists(ctx context.Context, orderID string) (bool, error)
 }
 
 type OrdersService struct {
@@ -25,12 +27,13 @@ func NewService(ordersRepository OrdersRepository) *OrdersService {
 	return &OrdersService{ordersRepository: ordersRepository}
 }
 
-func (s *OrdersService) Insert(ctx context.Context, order omodels.Order) error {
+func (s *OrdersService) Insert(ctx context.Context, order omodels.Order) (omodels.Order, error) {
 	order.OrderID = helpers.GenerateOrderID()
-	currTime := time.Now()
+	currTime := helpers.GetCurrentTime()
 	order.CreatedAt = currTime
 	order.UpdatedAt = currTime
-	return s.ordersRepository.Insert(ctx, order)
+	err := s.ordersRepository.Insert(ctx, order)
+	return order, err
 }
 
 func (s *OrdersService) Get(ctx context.Context, orderID string) (omodels.Order, error) {
@@ -38,7 +41,14 @@ func (s *OrdersService) Get(ctx context.Context, orderID string) (omodels.Order,
 }
 
 func (s *OrdersService) Update(ctx context.Context, order omodels.Order) error {
-	order.UpdatedAt = time.Now()
+	exists, err := s.ordersRepository.Exists(ctx, order.OrderID)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return errors.E(errors.NotFound, fmt.Sprintf("order not found with id %s", order.OrderID))
+	}
+	order.UpdatedAt = helpers.GetCurrentTime()
 	return s.ordersRepository.Update(ctx, order)
 }
 
