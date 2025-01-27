@@ -13,6 +13,7 @@ import (
 	handlers "learn-go/http/handlers"
 	xhmodels "learn-go/models/xhandlers"
 	mongodb "learn-go/repositories/mongodb"
+	redis "learn-go/repositories/redis"
 	health "learn-go/services/health"
 	students "learn-go/services/students"
 
@@ -31,18 +32,21 @@ import (
 // handlers for the services
 func InitializeServer(ctx context.Context, k config.Config, logger *zap.Logger) (*xhttp.Server, error) {
 	// Mongo Connection
-	client, err := mongodb.Connect(ctx, k.Mongo.MetaURI)
+	mongoClient, err := mongodb.Connect(ctx, k.Mongo.URI)
 	if err != nil {
 		return nil, err
 	}
 
-	// creating cache with default expiration, individual expiry can be set to keys later on.
-	// appCache := cache.New(5*time.Minute, 10*time.Minute)
+	// Redis Connection
+	redisClient, redisConnErr := redis.Connect(ctx, logger, k.Redis.URI)
+	if redisConnErr != nil {
+		return nil, redisConnErr
+	}
 
 	// Init repos, services && handlers
-	studentsRepo := mongodb.NewStudentsRepository(client)
+	studentsRepo := mongodb.NewStudentsRepository(mongoClient)
 
-	healthSvc := health.NewService(logger, client)
+	healthSvc := health.NewService(logger, mongoClient, redisClient)
 	studentsSvc := students.NewService(studentsRepo)
 
 	studentsHandler := handlers.NewSegmentsHandler(studentsSvc)
@@ -58,7 +62,6 @@ func InitializeServer(ctx context.Context, k config.Config, logger *zap.Logger) 
 // LoadConfig loads the default configuration and overrides it with the config file
 // specified by the path defined in the config flag
 func LoadConfig() *koanf.Koanf {
-
 	confifPathMsg := "Path to the application config file"
 	configPath := kingpin.Flag("config", confifPathMsg).Short('c').Default("config.yml").String()
 

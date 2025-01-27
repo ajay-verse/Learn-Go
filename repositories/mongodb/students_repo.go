@@ -32,7 +32,7 @@ func (r *StudentsRepository) GetAllStudents(ctx context.Context) (*[]models.Stud
 		return nil, err
 	}
 
-	var students []models.StudentModel
+	students := []models.StudentModel{}
 	if err := cursor.All(ctx, &students); err != nil {
 		return nil, err
 	}
