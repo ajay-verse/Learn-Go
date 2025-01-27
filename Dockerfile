@@ -7,7 +7,7 @@ RUN go mod download
 ADD . .
 RUN CGO_ENABLED=0 go build -o /usr/local/bin/learn-go ./cmd/learn-go
 
-EXPOSE 5476
+EXPOSE 8888
 
 # Start the application
 ENTRYPOINT ["learn-go"]
