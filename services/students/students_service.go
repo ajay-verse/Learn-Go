@@ -42,7 +42,7 @@ func (s *StudentsService) GetAllStudents(ctx context.Context) (*[]models.Student
 func (s *StudentsService) GetOneStudent(ctx context.Context, rollNo string) (*models.StudentModel, error) {
 	student, err := s.studentsRepository.GetOneStudent(ctx, rollNo)
 	if err != nil {
-		if err == mongo.ErrNoDocuments || student == nil {
+		if errors.Is(err, mongo.ErrNoDocuments) || student == nil {
 			return nil, errors.E(errors.NotFound, "student details not found")
 		}
 		return nil, fmt.Errorf("failed to get student details for rollNo :: %s due to :: %w", rollNo, err)
@@ -63,7 +63,7 @@ func (s *StudentsService) InsertStudent(ctx context.Context, student models.Stud
 func (s *StudentsService) UpdateStudent(ctx context.Context, rollNo string, updatedStudent models.StudentModel) error {
 	err := s.studentsRepository.UpdateStudent(ctx, rollNo, updatedStudent)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return errors.E(errors.NotFound, "student details not found")
 		}
 		return fmt.Errorf("failed to update student details for rollNo :: %s due to :: %w", rollNo, err)
@@ -75,7 +75,7 @@ func (s *StudentsService) UpdateStudent(ctx context.Context, rollNo string, upda
 func (s *StudentsService) DeleteStudent(ctx context.Context, rollNo string) error {
 	err := s.studentsRepository.DeleteStudent(ctx, rollNo)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return errors.E(errors.NotFound, "student details not found")
 		}
 		return fmt.Errorf("failed to delete student details for rollNo :: %s due to :: %w", rollNo, err)

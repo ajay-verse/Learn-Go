@@ -20,7 +20,7 @@ func EmptyParamErr(field string) error {
 	return E(Invalid, "validation failed", ve.Err())
 }
 
-// ConflictErr returns an formated error for conflict check
+// ConflictErr returns a formated error for conflict check
 func ConflictErr(appID, messageID string, err error) error {
 	return fmt.Errorf("conflict check for %s, messageId %s failed: %s", appID, messageID, err.Error())
 }

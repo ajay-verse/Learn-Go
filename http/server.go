@@ -1,7 +1,6 @@
 package http
 
 import (
-
 	// Go Internal Packages
 	"context"
 	"net/http"
@@ -21,12 +20,12 @@ import (
 	"moul.io/chizap"
 )
 
-// follow the alphabet order
+// Server struct follow the alphabet order
 type Server struct {
-	prefix   string
-	logger   *zap.Logger
-	students *handlers.Students
 	health   *health.HealthCheckerService
+	logger   *zap.Logger
+	prefix   string
+	students *handlers.Students
 }
 
 func NewServer(

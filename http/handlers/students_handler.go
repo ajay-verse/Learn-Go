@@ -11,11 +11,11 @@ import (
 	errors "learn-go/errors"
 	models "learn-go/models/students"
 
-	// Exernal Packages
+	// External Packages
 	"github.com/go-chi/chi/v5"
 )
 
-type StuentsService interface {
+type StudentsService interface {
 	GetOneStudent(context.Context, string) (*models.StudentModel, error)
 	GetAllStudents(context.Context) (*[]models.StudentModel, error)
 	InsertStudent(context.Context, models.StudentModel) error
@@ -24,10 +24,10 @@ type StuentsService interface {
 }
 
 type Students struct {
-	svc StuentsService
+	svc StudentsService
 }
 
-func NewSegmentsHandler(svc StuentsService) *Students {
+func NewSegmentsHandler(svc StudentsService) *Students {
 	return &Students{svc: svc}
 }
 

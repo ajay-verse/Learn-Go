@@ -77,7 +77,7 @@ func (r *StudentsRepository) UpdateStudent(ctx context.Context, rollNo string, u
 	return nil
 }
 
-// DeleteOneStudent deletes a student with given rollNo
+// DeleteStudent deletes a student with given rollNo
 func (r *StudentsRepository) DeleteStudent(ctx context.Context, rollNo string) error {
 	collection := r.client.Database("mybase").Collection(r.collection)
 	filter := bson.M{"Roll_No": rollNo}
