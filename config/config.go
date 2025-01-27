@@ -15,7 +15,10 @@ prefix: "/ajay-verse"
 is_prod_mode: false
 
 mongo:
-  meta_uri: "mongodb+srv://ajay:RjEGri696X2Rw8dK@my-cluster.0uuox.mongodb.net/?retryWrites=true&w=majority&appName=My-Cluster"
+  uri: "mongodb://localhost:27017"
+
+redis:
+  uri: "localhost:6379"
 `)
 
 type Config struct {
@@ -24,6 +27,7 @@ type Config struct {
 	Prefix     string `koanf:"prefix"`
 	IsProdMode bool   `koanf:"is_prod_mode"`
 	Mongo      Mongo  `koanf:"mongo"`
+	Redis      Redis  `koanf:"redis"`
 }
 
 type Logger struct {
@@ -31,7 +35,11 @@ type Logger struct {
 }
 
 type Mongo struct {
-	MetaURI string `koanf:"meta_uri"`
+	URI string `koanf:"uri"`
+}
+
+type Redis struct {
+	URI string `koanf:"uri"`
 }
 
 // Validate validates the configuration
@@ -44,9 +52,11 @@ func (c *Config) Validate() error {
 	if c.Logger.Level == "" {
 		ve.Add("logger.level", "cannot be empty")
 	}
-
-	if c.Mongo.MetaURI == "" {
-		ve.Add("mongo.meta_uri", "cannot be empty")
+	if c.Mongo.URI == "" {
+		ve.Add("mongo.uri", "cannot be empty")
+	}
+	if c.Redis.URI == "" {
+		ve.Add("redis.uri", "cannot be empty")
 	}
 
 	return ve.Err()

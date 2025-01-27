@@ -7,6 +7,7 @@ require (
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/jsternberg/zap-logfmt v1.3.0
 	github.com/knadh/koanf v1.5.0
+	github.com/redis/go-redis/v9 v9.7.0
 	go.mongodb.org/mongo-driver v1.17.1
 	go.uber.org/zap v1.27.0
 	moul.io/chizap v1.0.3
@@ -14,6 +15,8 @@ require (
 
 require (
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-chi/chi v1.5.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
