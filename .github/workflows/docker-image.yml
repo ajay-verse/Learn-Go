@@ -9,12 +9,26 @@ on:
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
+
+    outputs:
+      image_tag: ${{ steps.timestamp.outputs.timestamp }}
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Generate timestamp for image tag
+      id: timestamp
+      run: echo "timestamp=$(date +%s)" >> $GITHUB_ENV
+
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ajayverse/learn-go:$(date +%s)
+      run: docker build . --file Dockerfile --tag ajayverse/learn-go:${{ env.timestamp }}
+
+  push:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v4
+
     - name: Push the Docker image
-      run: docker push ajayverse/learn-go:$(date +%s)
+      run: docker push ajayverse/learn-go:${{ needs.build.outputs.image_tag }}
