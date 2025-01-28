@@ -1,23 +1,69 @@
-name: Docker Image CI
+name: CI/CD Workflow
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - '**' # Matches all branches
+  pull_request:
+    branches:
+      - 'main'
 
 jobs:
-  build-and-push:
+  lint:
+    name: Lint Code
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }} 
-    - name: Build and Push the Docker image
-      run: |
-        TIMESTAMP=$(date +%s)
-        docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/learn-go:$TIMESTAMP
-        docker push ${{ secrets.DOCKER_USERNAME }}/learn-go:$TIMESTAMP
+      - name: Run Linter
+        run: |
+          - go vet ./...
+          - go generate ./...
+          - git diff --exit-code
+          - go fmt ./...
+          - git diff --exit-code
+
+  build:
+    name: Build Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Project
+        run: |
+          go build  -o service_bin ./cmd/apxorapi
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Tests
+        run: |
+          go test -v ./... -cover
+
+  docker-push:
+    name: Bake and Push Docker Image
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - build
+      - test
+    if: ${{ github.event_name == 'push' }} # Manual action only on pushes
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and Push the Docker image
+        run: |
+          TIMESTAMP=$(date +%s)
+          docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/learn-go:$TIMESTAMP
+          docker push ${{ secrets.DOCKER_USERNAME }}/learn-go:$TIMESTAMP
