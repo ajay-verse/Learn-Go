@@ -18,11 +18,11 @@ jobs:
 
       - name: Run Linter
         run: |
-          - go vet ./...
-          - go generate ./...
-          - git diff --exit-code
-          - go fmt ./...
-          - git diff --exit-code
+          go vet ./...
+          go generate ./...
+          git diff --exit-code
+          go fmt ./...
+          git diff --exit-code
 
   build:
     name: Build Code
@@ -33,7 +33,7 @@ jobs:
 
       - name: Build Project
         run: |
-          go build  -o service_bin ./cmd/apxorapi
+          go build -v ./...
 
   test:
     name: Run Tests
