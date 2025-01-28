@@ -40,9 +40,9 @@ func InitializeServer(ctx context.Context, k config.Config, logger *zap.Logger) 
 	}
 
 	// Redis Connection
-	redisClient, redisConnErr := redis.Connect(ctx, logger, k.Redis.URI)
-	if redisConnErr != nil {
-		return nil, redisConnErr
+	redisClient, err := redis.Connect(ctx, logger, k.Redis.URI)
+	if err != nil {
+		return nil, err
 	}
 
 	// Init repos, services && handlers
