@@ -12,20 +12,18 @@ import (
 
 	// External Packages
 	"github.com/redis/go-redis/v9"
-	"go.uber.org/zap"
 )
 
 type OrdersRepository struct {
 	client *redis.Client
-	log    *zap.Logger
 }
 
-func NewOrdersRepository(client *redis.Client, logger *zap.Logger) *OrdersRepository {
-	return &OrdersRepository{client: client, log: logger}
+func NewOrdersRepository(client *redis.Client) *OrdersRepository {
+	return &OrdersRepository{client: client}
 }
 
 func orderIDKey(id string) string {
-	return fmt.Sprintf("order-%s", id)
+	return fmt.Sprintf("order:%s", id)
 }
 
 func (r *OrdersRepository) Insert(ctx context.Context, order omodels.Order) error {
@@ -44,7 +42,7 @@ func (r *OrdersRepository) Insert(ctx context.Context, order omodels.Order) erro
 
 	if err := tx.SAdd(ctx, "orders", key).Err(); err != nil {
 		tx.Discard()
-		return fmt.Errorf("failed to insert order to set: %w", err)
+		return fmt.Errorf("failed to add order to set: %w", err)
 	}
 
 	if _, err := tx.Exec(ctx); err != nil {
@@ -87,7 +85,7 @@ func (r *OrdersRepository) Delete(ctx context.Context, orderID string) error {
 	}
 	if err := tx.SRem(ctx, "orders", key).Err(); err != nil {
 		tx.Discard()
-		return fmt.Errorf("failed to delete order from set: %w", err)
+		return fmt.Errorf("failed to remove order from set: %w", err)
 	}
 
 	if _, err := tx.Exec(ctx); err != nil {

@@ -3,7 +3,6 @@ package main
 import (
 	// Go Internal Packages
 	"context"
-	"learn-go/services/orders"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,7 +15,9 @@ import (
 	mongodb "learn-go/repositories/mongodb"
 	redis "learn-go/repositories/redis"
 	health "learn-go/services/health"
+	orders "learn-go/services/orders"
 	students "learn-go/services/students"
+	consts "learn-go/utils/constants"
 
 	// External Packages
 	"github.com/alecthomas/kingpin/v2"
@@ -46,7 +47,7 @@ func InitializeServer(ctx context.Context, k config.Config, logger *zap.Logger) 
 
 	// Init repos, services && handlers
 	studentsRepo := mongodb.NewStudentsRepository(mongoClient)
-	ordersRepo := redis.NewOrdersRepository(redisClient, logger)
+	ordersRepo := redis.NewOrdersRepository(redisClient)
 
 	healthSvc := health.NewService(logger, mongoClient, redisClient)
 	studentsSvc := students.NewService(studentsRepo)
@@ -96,7 +97,7 @@ func main() {
 	_ = cfg.Level.UnmarshalText([]byte(k.String("logger.level")))
 	cfg.InitialFields = make(map[string]any)
 	cfg.InitialFields["host"], _ = os.Hostname()
-	cfg.InitialFields["service"] = "learn-go"
+	cfg.InitialFields["service"] = consts.PROJECT_NAME
 	cfg.OutputPaths = []string{"stdout"}
 	logger, _ := cfg.Build()
 	defer func() {

@@ -39,6 +39,5 @@ func (h *HealthCheckerService) Health(ctx context.Context) bool {
 		h.logger.Error("Redis ping failed", zap.Error(redisPingErr))
 		return false
 	}
-
 	return true
 }
