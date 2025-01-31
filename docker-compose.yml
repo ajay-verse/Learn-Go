@@ -14,7 +14,7 @@ services:
       - ~/docker-data/redis:/data
 
   app:
-    image: ajayverse/learn-go:1737979167
+    image: ajayverse/learn-go:1738048961
     network_mode: host
     depends_on:
       - mongo
