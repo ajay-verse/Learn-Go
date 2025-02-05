@@ -27,7 +27,7 @@ type StudentsHandler struct {
 	svc StudentsService
 }
 
-func NewSegmentsHandler(svc StudentsService) *StudentsHandler {
+func NewStudentsHandler(svc StudentsService) *StudentsHandler {
 	return &StudentsHandler{svc: svc}
 }
 

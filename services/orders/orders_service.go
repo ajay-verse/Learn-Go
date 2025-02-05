@@ -28,7 +28,7 @@ func NewService(ordersRepository OrdersRepository) *OrdersService {
 }
 
 func (s *OrdersService) Insert(ctx context.Context, order omodels.Order) (omodels.Order, error) {
-	order.OrderID = helpers.GenerateOrderID()
+	order.OrderID = helpers.GenerateRandomID()
 	currTime := helpers.GetCurrentTime()
 	order.CreatedAt = currTime
 	order.UpdatedAt = currTime

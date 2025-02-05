@@ -13,9 +13,8 @@ import (
 	handlers "learn-go/http/handlers"
 	xhmodels "learn-go/models/xhandlers"
 	mongodb "learn-go/repositories/mongodb"
-	redis "learn-go/repositories/redis"
 	health "learn-go/services/health"
-	orders "learn-go/services/orders"
+	logs "learn-go/services/logs"
 	students "learn-go/services/students"
 	consts "learn-go/utils/constants"
 
@@ -39,26 +38,20 @@ func InitializeServer(ctx context.Context, k config.Config, logger *zap.Logger) 
 		return nil, err
 	}
 
-	// Redis Connection
-	redisClient, err := redis.Connect(ctx, logger, k.Redis.URI)
-	if err != nil {
-		return nil, err
-	}
-
 	// Init repos, services && handlers
 	studentsRepo := mongodb.NewStudentsRepository(mongoClient)
-	ordersRepo := redis.NewOrdersRepository(redisClient)
+	logsRepo := mongodb.NewLogsRepository(mongoClient)
 
-	healthSvc := health.NewService(logger, mongoClient, redisClient)
+	healthSvc := health.NewService(logger, mongoClient)
 	studentsSvc := students.NewService(studentsRepo)
-	ordersSvc := orders.NewService(ordersRepo)
+	logsSvc := logs.NewService(logsRepo)
 
-	studentsHandler := handlers.NewSegmentsHandler(studentsSvc)
-	ordersHandler := handlers.NewOrdersHandler(ordersSvc)
+	studentsHandler := handlers.NewStudentsHandler(studentsSvc)
+	logsHandler := handlers.NewLogsHandler(logsSvc)
 
 	xHandlers := xhmodels.XHandlers{
 		StudentsHandlers: studentsHandler,
-		OrdersHandlers:   ordersHandler,
+		LogsHandlers:     logsHandler,
 	}
 
 	server := xhttp.NewServer(k.Prefix, logger, &xHandlers, healthSvc)
