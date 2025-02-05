@@ -14,5 +14,7 @@ func GetCurrentTime() time.Time {
 }
 
 func GetCurrentTimeString() string {
-	return time.Now().Format("Jan 02 2006 03:04:05 PM")
+	loc, _ := time.LoadLocation("Asia/Kolkata")
+	istTime := time.Now().In(loc).Format("Jan 02 2006 03:04:05 PM")
+	return istTime
 }
