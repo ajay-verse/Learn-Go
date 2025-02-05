@@ -28,6 +28,18 @@ import (
 	"go.uber.org/zap"
 )
 
+// LoadSecrets Loads the secret variables and overrides the config
+func LoadSecrets(k config.Config) config.Config {
+	MongoURI := os.Getenv("MONGO_URI")
+	if MongoURI != "" {
+		k.Mongo.URI = MongoURI
+	}
+
+	IsProdMode := os.Getenv("IS_PROD_MODE")
+	k.IsProdMode = IsProdMode == "true"
+	return k
+}
+
 // InitializeServer sets up an HTTP server with defined handlers.
 // Repositories are initialized, creates the services, and subsequently constructs
 // handlers for the services
@@ -79,12 +91,12 @@ func main() {
 	k := LoadConfig()
 	appKonf := config.Config{}
 	k.Unmarshal("", &appKonf)
+	updatedKonf := LoadSecrets(appKonf)
 
-	if !appKonf.IsProdMode {
+	if !updatedKonf.IsProdMode {
 		k.Print()
 	}
 
-	// FIX ME: Rewrite this logger config section
 	cfg := zap.NewProductionConfig()
 	cfg.Encoding = "logfmt"
 	_ = cfg.Level.UnmarshalText([]byte(k.String("logger.level")))
@@ -100,7 +112,7 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	srv, err := InitializeServer(ctx, appKonf, logger)
+	srv, err := InitializeServer(ctx, updatedKonf, logger)
 	if err != nil {
 		logger.Fatal("Cannot initialize server", zap.Error(err))
 	}
